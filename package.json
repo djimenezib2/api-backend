@@ -1,0 +1,41 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "TFG from David Jiménez Belmonte",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/djimenezib2/api-backend.git"
+  },
+  "author": "David Jiménez Belmonte",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/djimenezib2/api-backend/issues"
+  },
+  "homepage": "https://github.com/djimenezib2/api-backend#readme",
+  "dependencies": {
+    "body-parser": "^1.20.0",
+    "compression": "^1.7.4",
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.1",
+    "express-mongo-sanitize": "^2.2.0",
+    "express-rate-limit": "^6.7.0",
+    "fuse.js": "^6.6.2",
+    "helmet": "^5.1.1",
+    "morgan": "^1.10.0",
+    "uuid": "^8.3.2",
+    "xss-clean": "^0.1.1",
+    "mongoose": "^6.9.1",
+    "mongoose-intl": "^3.3.0",
+    "slugify": "^1.6.5",
+    "moment": "^2.29.4",
+    "jsonwebtoken": "^9.0.0",
+    "class-validator": "^0.14.0"
+  }
+}

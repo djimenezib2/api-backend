@@ -1,6 +1,5 @@
 const express = require('express');
 const tenderController = require('./../controllers/tenderController');
-const authController = require('./../controllers/authController');
 
 const router = express.Router();
 
@@ -14,11 +13,6 @@ router
 router
   .route('/source/contratacionesdelestado/create')
   .post(tenderController.sourcesSpainContratacionesDelEstado);
-
-// - Consultas preliminares
-router
-  .route('/source/consultas/create')
-  .post(tenderController.sourcesSpainConsultasPreliminares);
 
 // - Contratos menores
 router
@@ -40,26 +34,13 @@ router.route('/source/dre/create').post(tenderController.createFromDre);
 router.route('/source/ted').get(tenderController.getTendersTed);
 router.route('/source/ted/create').post(tenderController.createFromTed);
 
-// - Gencat
-router.route('/source/gencat').get(tenderController.getTendersGencat);
-router.route('/source/gencat/create').post(tenderController.createFromGencat);
-// ...
-
-router.use(authController.protect);
 // Other
 router.route('/counter').get(tenderController.getCounter);
 
-router
-  .route('/')
-  .get(tenderController.getAll)
-  .post(
-    authController.restrictTo('admin', 'super-admin'),
-    tenderController.createOne,
-  );
+router.route('/').get(tenderController.getAll).post(tenderController.createOne);
 
 // Licitaciones
 router.route('/active').get(tenderController.getActive);
-router.route('/related').get(tenderController.getRelated);
 
 // Adjudicaciones
 router.route('/adjudications').get(tenderController.getAdjudications);
@@ -75,14 +56,8 @@ router.route('/updateCPVs').patch(tenderController.updateCPVs);
 router
   .route('/:id')
   .get(tenderController.getOne)
-  .patch(
-    authController.restrictTo('admin', 'super-admin'),
-    tenderController.updateOne,
-  )
-  .delete(
-    authController.restrictTo('admin', 'super-admin'),
-    tenderController.deleteOne,
-  );
+  .patch(tenderController.updateOne)
+  .delete(tenderController.deleteOne);
 
 // router.route("/").get(tenderController.getAllTenders);
 // .post(tenderController.createTender);

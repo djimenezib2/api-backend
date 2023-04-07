@@ -1,7 +1,5 @@
 const Runnable = require('./../models/runnableModel');
 const AppError = require('./../utils/appError');
-const User = require('./../models/userModel');
-//const Email = require("./../utils/email");
 const factory = require('./handlerFactory');
 const catchAsync = require('./../utils/catchAsync');
 
@@ -30,7 +28,7 @@ exports.createRunnable = async (req, res, next) => {
       error.message,
       404,
       JSON.stringify(req.body),
-      'Contratacion del Estado',
+      'Contratacion del Estado'
     );
     return res.status(404).json({ success: false, message: error.message });
   }

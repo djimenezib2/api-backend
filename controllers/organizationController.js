@@ -5,9 +5,6 @@ const utils = require('../utils/utils');
 // MODELS
 const Organization = require('./../models/organizationModel');
 
-// Sources
-const sourceOrganizaciones = require('./sources/spain/organizaciones');
-
 exports.createOrganization = factory.createOne(Organization);
 exports.getOrganization = factory.getOne(Organization);
 exports.getAllOrganizations = factory.getAll(Organization);
@@ -21,7 +18,7 @@ exports.getPublicContractingInstitutions = catchAsync(
     });
 
     factory.getAll(Organization, query)(req, res, next);
-  },
+  }
 );
 
 exports.getBidders = catchAsync(async (req, res, next) => {
@@ -31,9 +28,6 @@ exports.getBidders = catchAsync(async (req, res, next) => {
 
   factory.getAll(Organization, query)(req, res, next);
 });
-
-// Create from sources
-exports.sourcesOrganizaciones = sourceOrganizaciones.create();
 
 exports.search = catchAsync(async (req, res, next) => {
   // Get search term from query

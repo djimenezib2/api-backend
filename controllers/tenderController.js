@@ -1,27 +1,17 @@
 const AppError = require('./../utils/appError');
 const catchAsync = require('./../utils/catchAsync');
-const Discord = require('./../utils/discord');
-const Email = require('./../utils/email');
 const factory = require('./handlerFactory');
-const { sanitizeRegex } = require('../../utils/stringManipulation');
 
 // Models
-const SearchCriteria = require('./../models/searchCriteriaModel');
 const Tender = require('./../models/tenderModel');
-const TenderAccount = require('./../models/tenderAccountModel');
 const Cpv = require('./../models/cpvModel');
-
-// Controlellers
-const tenderAccountController = require('./../controllers/tenderAccountController');
 
 // Sources
 const sourceSpainContratacionDelEstado = require('./sources/spain/contrataciondelestado');
-const sourceSpainConsultasPreliminares = require('./sources/spain/consultas');
 const sourceSpainContratacionesMenores = require('./sources/spain/contratacionesmenores');
 const sourceSpainBOE = require('./sources/spain/boe');
 const sourcePortugalDRE = require('./sources/portugal/dre');
 const sourceEuropeTED = require('./sources/europe/ted');
-const sourceSpainGencat = require('./sources/spain/gencat');
 
 exports.createOne = factory.createOne(Tender);
 exports.getOne = factory.getOne(Tender, [
@@ -113,14 +103,11 @@ exports.deleteOne = factory.deleteOne(Tender);
 // Create from sources
 exports.sourcesSpainContratacionesDelEstado =
   sourceSpainContratacionDelEstado.create();
-exports.sourcesSpainConsultasPreliminares =
-  sourceSpainConsultasPreliminares.create();
 exports.createFromContratacionesMenores =
   sourceSpainContratacionesMenores.create();
 exports.createFromBoe = sourceSpainBOE.create();
 exports.createFromDre = sourcePortugalDRE.create();
 exports.createFromTed = sourceEuropeTED.create();
-exports.createFromGencat = sourceSpainGencat.create();
 
 // Other functions
 
@@ -137,15 +124,6 @@ exports.getActive = catchAsync(async (req, res, next) => {
   const query = Tender.find({
     submissionDeadlineDate: { $gte: new Date().toDateString(), $ne: null }, // it will get you records for today's date only
   });
-
-  factory.getAll(Tender, query)(req, res, next);
-});
-
-exports.getRelated = catchAsync(async (req, res, next) => {
-  const query = TenderAccount.find({
-    account: req.query.accountId,
-    isArchived: false,
-  }).populate('tender');
 
   factory.getAll(Tender, query)(req, res, next);
 });
@@ -252,235 +230,6 @@ exports.getTendersGencat = catchAsync(async (req, res, next) => {
 
   factory.getAll(Tender, query)(req, res, next);
 });
-
-exports.analyze = async (tender) => {
-  // console.log("TENDER: " + tender.name)
-  const searchCriterias = await SearchCriteria.find({
-    isActive: true,
-    isArchived: false,
-  })
-    .populate('account')
-    .populate('parameters.cpvCodes')
-    .populate('parameters.excludedCpvCodes')
-    .populate('parameters.contractors')
-    .populate('users')
-    .exec();
-
-  for (const searchCriteria of searchCriterias) {
-    parameters = searchCriteria.parameters;
-
-    // debugger;
-
-    // 1) Keyword
-    const keywords = analyzeKeyword(tender, parameters.keywords);
-
-    // 2) CPV
-    const cpvs = analyzeCPVs(tender, parameters.cpvCodes);
-    const excludedCpvs = analyzeCPVs(tender, parameters.excludedCpvCodes);
-
-    // 3) Areas
-    // ...
-
-    // 4) € min
-    const inBudget = analyzeBudget(
-      tender,
-      parameters.minBudgetNoTaxes,
-      parameters.maxBudgetNoTaxes
-    );
-
-    // 5) € max
-    // ...
-    const contractors = analyzeContractors(tender, parameters.contractors);
-
-    // 6) Exclude word
-    const excludeWords = analyzeExcludeWords(tender, parameters.excludeWords);
-
-    //Locations
-    const inLocation = analyzeLocations(tender, parameters.locations);
-    const excludedLocations = analyzeExcludedLocations(
-      tender,
-      parameters.excludedLocations
-    );
-
-    // Status
-    const status = analyzeStatus(tender, parameters.status);
-
-    // console.log("keywords: " + keywords)
-    // console.log("cpvs: " + keywords)
-    // console.log("inBudget: " + inBudget)
-    // console.log("excludeWords: " + excludeWords)
-    // console.log("inLocation: " + inLocation)
-    // console.log("status: " + status)
-    // console.log("-----------------------------------")
-
-    const result =
-      (keywords || cpvs) &&
-      !excludeWords &&
-      !excludedCpvs &&
-      contractors &&
-      inBudget &&
-      !excludedLocations &&
-      inLocation &&
-      status;
-
-    // console.log("RESULT: " + result)
-
-    if (result) {
-      await match(tender, searchCriteria);
-    }
-  }
-};
-
-const analyzeBudget = (tender, minBudget, maxBudget) => {
-  if (minBudget == null) {
-    minBudget = 0;
-  }
-  if (maxBudget == null) {
-    maxBudget = Infinity;
-  }
-
-  // Comentar este if si está mal planteado.
-  if (!tender.budgetNoTaxes) {
-    return true;
-  }
-
-  return tender.budgetNoTaxes < maxBudget && tender.budgetNoTaxes > minBudget;
-};
-
-const analyzeLocations = (tender, searchLocations) => {
-  if (searchLocations instanceof Array && searchLocations.length === 0) {
-    return true;
-  }
-  if (!tender instanceof Map) {
-    return true;
-  }
-
-  const tenderLocations = Array.from(tender.locations.entries()).map(
-    ([key, value]) => `${key}/${value}`
-  );
-  return searchLocations
-    .map((sl) => tenderLocations.includes(sl))
-    .reduce((pv, v) => v || Boolean(pv), false);
-};
-
-const analyzeExcludedLocations = (tender, searchLocations) => {
-  if (searchLocations instanceof Array && searchLocations.length === 0) {
-    return false;
-  }
-  if (!tender instanceof Map) {
-    return false;
-  }
-
-  const tenderLocations = Array.from(tender.locations.entries()).map(
-    ([key, value]) => `${key}/${value}`
-  );
-  return searchLocations
-    .map((sl) => tenderLocations.includes(sl))
-    .reduce((pv, v) => v || Boolean(pv), false);
-};
-
-const analyzeKeyword = (tender, keywords) => {
-  let condition = false;
-
-  for (const word of keywords) {
-    condition = tender.name.toLowerCase().includes(word.toLowerCase());
-    if (condition) {
-      break;
-    }
-  }
-
-  return condition;
-};
-
-const analyzeCPVs = (tender, searchCriteriaCpvs) => {
-  /*if(cpvCodes.length <= 0){
-    return true;*/
-  return tender.cpvCodes.reduce(
-    (pv, tc) => pv || !!searchCriteriaCpvs.find((scc) => scc.code === tc.code),
-    false
-  );
-};
-
-const analyzeContractors = (tender, contractors) => {
-  /*if(cpvCodes.length <= 0){
-    return true;*/
-  return !!contractors.find((con) =>
-    con._id.equals(tender.contractingOrganization?._id)
-  );
-};
-
-const analyzeExcludeWords = (tender, excludeWords) => {
-  let condition = false;
-
-  for (const word of excludeWords) {
-    condition = tender.name.toLowerCase().includes(word.toLowerCase());
-    if (condition) {
-      break;
-    }
-  }
-
-  return condition;
-};
-
-const analyzeStatus = (tender, status) => {
-  return status.length > 0 ? status.includes(tender.status) : true;
-};
-
-const match = async (tender, searchCriteria) => {
-  const tenderAccount = await tenderAccountController.findOrCreate(
-    tender,
-    searchCriteria
-  );
-
-  if (searchCriteria.emailFrequency !== 'real-time') {
-    return null;
-  }
-
-  if (tenderAccount) {
-    // Notify Stakeholders
-    await notifyStakeholders(tender, tenderAccount, searchCriteria);
-  }
-};
-
-const notifyStakeholders = async (tender, tenderAccount, searchCriteria) => {
-  if (!searchCriteria.account.isAllowedCustomer) return;
-
-  if (searchCriteria.notificationChannel == 'discord') {
-    await new Discord().tenderNotification({
-      searchCriteria,
-      tender,
-      tenderAccount,
-    });
-    return;
-  }
-
-  const emailData = {
-    account: searchCriteria.account,
-    buttonHref: `${process.env.APP_URL}/tender-account/${tenderAccount._id}`,
-    searchCriteria,
-    tender,
-    tenderAccount,
-  };
-
-  await notifyUsers(searchCriteria, emailData);
-
-  await notifyWatchers(searchCriteria, emailData);
-};
-
-const notifyUsers = async (searchCriteria, emailData) => {
-  for (const user of searchCriteria.users) {
-    await new Email(user.email).sendRealTimeSearchCriteriaNotification({
-      ...emailData,
-      user,
-    });
-  }
-};
-
-const notifyWatchers = async (searchCriteria, emailData) => {
-  for (const email of searchCriteria.emails) {
-    await new Email(email).sendRealTimeSearchCriteriaNotification(emailData);
-  }
-};
 
 exports.updateGeneral = catchAsync(async (req, res, next) => {
   doc = await Tender.findById(req.body.tenderId).exec();

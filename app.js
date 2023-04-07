@@ -16,7 +16,7 @@ const organizationRouter = require('./routes/organizationRoutes');
 const runnableRouter = require('./routes/runnableRoutes');
 const tenderRouter = require('./routes/tenderRoutes');
 
-const router = express.Router();
+const router = express();
 
 // CORS related
 router.use(cors());
@@ -57,4 +57,4 @@ router.use('/v1/organizations', organizationRouter);
 router.use('/v1/runnables', runnableRouter);
 router.use('/v1/tenders', tenderRouter);
 
-module.exports = legacyRouter;
+module.exports = router;
