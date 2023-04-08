@@ -15,7 +15,7 @@ exports.updateSource = async function (tender, sourceName, body) {
   tender = await Tender.findByIdAndUpdate(
     tender.id,
     { $push: { sources: newSource } },
-    { new: true },
+    { new: true }
   );
   return tender;
 };
@@ -62,14 +62,6 @@ exports.getSource = function (sourceName, body) {
       return {
         name: 'Tenders Electronic Daily',
         country: 'Europe',
-        sourceUrl: body.sourceUrl,
-        linkUrl: body.linkUrl,
-        body: JSON.stringify(body),
-      };
-    case 'Gencat':
-      return {
-        name: 'Gencat',
-        country: 'Spain',
         sourceUrl: body.sourceUrl,
         linkUrl: body.linkUrl,
         body: JSON.stringify(body),
