@@ -28,7 +28,7 @@ exports.create = () =>
         "I won't accept bad urls",
         400,
         JSON.stringify(req.body),
-        'BOE',
+        'BOE'
       );
     }
 
@@ -98,12 +98,12 @@ const updateFromBody = async function (tender, body) {
   tender = await commons.updateSource(
     tender,
     'Boletín Oficial del Estado',
-    body,
+    body
   );
   debugger;
   if (
     moment(body.expedientUpdatedAt, 'DD/MM/YYYY HH:mm').isAfter(
-      new Date(tender.expedientUpdatedAt),
+      new Date(tender.expedientUpdatedAt)
     )
   ) {
     var objForUpdate = {};
@@ -119,7 +119,7 @@ const updateFromBody = async function (tender, body) {
       objForUpdate.cpvCodes = await getCpvCodesFromString(body.cpvCodes);
     if (body.submissionDeadlineDate)
       objForUpdate.submissionDeadlineDate = repairDate(
-        body.submissionDeadlineDate,
+        body.submissionDeadlineDate
       );
     if (body.expedientUpdatedAt)
       objForUpdate.expedientUpdatedAt = repairDate(body.expedientUpdatedAt);
@@ -127,7 +127,7 @@ const updateFromBody = async function (tender, body) {
       objForUpdate.budgetNoTaxes = numbersFromPriceString(body.budgetNoTaxes);
     if (body.contractEstimatedValue)
       objForUpdate.contractEstimatedValue = numbersFromPriceString(
-        body.contractEstimatedValue,
+        body.contractEstimatedValue
       );
     if (body.result) objForUpdate.result = body.result;
     if (body.biddersNumber)
@@ -138,7 +138,7 @@ const updateFromBody = async function (tender, body) {
     if (body.successBidderOrganization && !tender.successBidderOrganization)
       objForUpdate.successBidderOrganization = await Organization.findOrCreate(
         body.successBidderOrganization,
-        'bidder',
+        'bidder'
       );
     if (body.sheets) objForUpdate.sheets = body.sheets;
     if (body.documents) objForUpdate.documents = await getDocuments(body);
@@ -151,11 +151,6 @@ const updateFromBody = async function (tender, body) {
       new: true,
       runValidators: true,
     });
-
-    if (body.match) {
-      // Match tender with search criterias
-      tenderController.analyze(tender);
-    }
   }
 
   return tender;
@@ -165,11 +160,11 @@ const createFromBody = async function (body) {
   // Organization
   const contractingOrganization = await Organization.findOrCreate(
     body.contractingOrganization,
-    'public-contracting-institution',
+    'public-contracting-institution'
   );
   const successBidderOrganization = await Organization.findOrCreate(
     body.successBidderOrganization,
-    'bidder',
+    'bidder'
   );
 
   // Number
@@ -204,11 +199,6 @@ const createFromBody = async function (body) {
   });
 
   await tender.populate('sources');
-
-  if (body.match) {
-    // Match tender with search criterias
-    tenderController.analyze(tender);
-  }
 
   return tender;
 };

@@ -28,7 +28,7 @@ exports.create = () =>
         "I won't accept bad urls",
         400,
         JSON.stringify(req.body),
-        'Contratacion del Estado',
+        'Contratacion del Estado'
       );
     }
     // Check if Tender already exists
@@ -81,7 +81,7 @@ exports.create = () =>
         error.message,
         404,
         JSON.stringify(req.body),
-        'Contratacion del Estado',
+        'Contratacion del Estado'
       );
       return res.status(404).json({ success: false, message: error.message });
     }
@@ -101,17 +101,13 @@ const updateFromBody = async function (tender, body) {
   tender = await commons.updateSource(
     tender,
     'Plataforma de Contratación del Sector Público',
-    body,
+    body
   );
-  // if (
-  //   moment(body.expedientUpdatedAt, 'DD/MM/YYYY HH:mm').isAfter(
-  //     new Date(tender.expedientUpdatedAt),
-  //   )
-  // )
-  // only to re run script and force update, once done go back to commented code
-  const lastUpdate = moment(body.expedientUpdatedAt, 'DD/MM/YYYY HH:mm');
-  if (body.atom) lastUpdate.add(1, 'minutes').add(1, 'hours');
-  if (lastUpdate.isAfter(new Date(tender.expedientUpdatedAt))) {
+  if (
+    moment(body.expedientUpdatedAt, 'DD/MM/YYYY HH:mm').isAfter(
+      new Date(tender.expedientUpdatedAt)
+    )
+  ) {
     var objForUpdate = {};
 
     // updatetAt not updating right now.
@@ -125,7 +121,7 @@ const updateFromBody = async function (tender, body) {
       objForUpdate.cpvCodes = await getCpvCodesFromString(body.cpvCodes);
     if (body.submissionDeadlineDate)
       objForUpdate.submissionDeadlineDate = repairDate(
-        body.submissionDeadlineDate,
+        body.submissionDeadlineDate
       );
     if (body.expedientUpdatedAt)
       objForUpdate.expedientUpdatedAt = repairDate(body.expedientUpdatedAt);
@@ -133,7 +129,7 @@ const updateFromBody = async function (tender, body) {
       objForUpdate.budgetNoTaxes = numbersFromPriceString(body.budgetNoTaxes);
     if (body.contractEstimatedValue)
       objForUpdate.contractEstimatedValue = numbersFromPriceString(
-        body.contractEstimatedValue,
+        body.contractEstimatedValue
       );
     if (body.result) objForUpdate.result = body.result;
     if (body.biddersNumber)
@@ -144,7 +140,7 @@ const updateFromBody = async function (tender, body) {
     if (body.successBidderOrganization && !tender.successBidderOrganization)
       objForUpdate.successBidderOrganization = await Organization.findOrCreate(
         body.successBidderOrganization,
-        'bidder',
+        'bidder'
       );
     if (body.sheets) objForUpdate.sheets = body.sheets;
     if (body.documents) objForUpdate.documents = await getDocuments(body);
@@ -157,11 +153,6 @@ const updateFromBody = async function (tender, body) {
       new: true,
       runValidators: true,
     });
-
-    if (body.match) {
-      // Match tender with search criterias
-      tenderController.analyze(tender);
-    }
   }
 
   return tender;
@@ -172,17 +163,17 @@ const createFromBody = async function (body) {
   // Organization
   const contractingOrganization = await Organization.findOrCreate(
     body.contractingOrganization,
-    'public-contracting-institution',
+    'public-contracting-institution'
   );
   const successBidderOrganization = await Organization.findOrCreate(
     body.successBidderOrganization,
-    'bidder',
+    'bidder'
   );
 
   // Number
   const budgetNoTaxes = numbersFromPriceString(body.budgetNoTaxes);
   const contractEstimatedValue = numbersFromPriceString(
-    body.contractEstimatedValue,
+    body.contractEstimatedValue
   );
   const awardAmount = numbersFromPriceString(body.awardAmount);
   const biddersNumber = numbersFromIntegerString(body.biddersNumber);
@@ -198,7 +189,7 @@ const createFromBody = async function (body) {
   const procedure = getProcedure(body.procedure);
   const sources = commons.getSource(
     'Plataforma de Contratación del Sector Público',
-    body,
+    body
   );
 
   // Repair body documents
@@ -231,11 +222,6 @@ const createFromBody = async function (body) {
     isAdjudication: body.status === 'Adjudicada',
   });
   await tender.populate('sources');
-
-  if (body.match) {
-    // Match tender with search criterias
-    tenderController.analyze(tender);
-  }
 
   return tender;
 };
