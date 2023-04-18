@@ -159,7 +159,6 @@ const updateFromBody = async function (tender, body) {
 };
 
 const createFromBody = async function (body) {
-  console.log(body);
   // Organization
   const contractingOrganization = await Organization.findOrCreate(
     body.contractingOrganization,

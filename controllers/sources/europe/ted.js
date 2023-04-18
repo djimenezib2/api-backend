@@ -29,17 +29,11 @@ exports.create = () =>
       .populate('sources')
       .exec();
 
-    console.log('First docs:');
-    console.log(docs);
-
     // Check if document already exists
     if (docs.length < 1) {
       docs = await Tender.find({ expedient: req.body.expedient })
         .populate('sources')
         .exec();
-
-      console.log('Second docs:');
-      console.log(docs);
     }
 
     const options = {
@@ -67,9 +61,6 @@ exports.create = () =>
     if (matches.length > 0 && matches[0].score <= 0.55) {
       doc = docs[matches[0].refIndex];
     }
-
-    console.log('Third docs:');
-    console.log(docs);
 
     if (doc != null) {
       // Check if something has changed
