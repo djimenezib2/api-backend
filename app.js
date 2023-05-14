@@ -15,6 +15,7 @@ const cpvRouter = require('./routes/cpvRoutes');
 const organizationRouter = require('./routes/organizationRoutes');
 const runnableRouter = require('./routes/runnableRoutes');
 const tenderRouter = require('./routes/tenderRoutes');
+const errorRouter = require('./routes/errorRoutes');
 
 const router = express();
 
@@ -56,5 +57,6 @@ router.use('/v1/cpvs', cpvRouter);
 router.use('/v1/organizations', organizationRouter);
 router.use('/v1/runnables', runnableRouter);
 router.use('/v1/tenders', tenderRouter);
+router.use('/v1/errors', errorRouter);
 
 module.exports = router;

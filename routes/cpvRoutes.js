@@ -1,5 +1,5 @@
-const express = require("express");
-const cpvController = require("./../controllers/cpvController");
+const express = require('express');
+const cpvController = require('./../controllers/cpvController');
 
 const router = express.Router();
 
@@ -8,7 +8,7 @@ const router = express.Router();
 //   .get(cpvController.getAll)
 //   .post(cpvController.create);
 
-router.route("/search").get(cpvController.search);
+router.route('/search').get(cpvController.search);
 
 // router
 //   .route("/:id")

@@ -223,13 +223,6 @@ exports.getTendersTed = catchAsync(async (req, res, next) => {
 
   factory.getAll(Tender, query)(req, res, next);
 });
-exports.getTendersGencat = catchAsync(async (req, res, next) => {
-  const query = Tender.find({
-    'sources.name': 'Gencat',
-  });
-
-  factory.getAll(Tender, query)(req, res, next);
-});
 
 exports.updateGeneral = catchAsync(async (req, res, next) => {
   doc = await Tender.findById(req.body.tenderId).exec();
