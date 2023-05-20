@@ -36,6 +36,7 @@ router.route('/source/ted/create').post(tenderController.createFromTed);
 
 // Other
 router.route('/counter').get(tenderController.getCounter);
+router.route('/lastTenders').get(tenderController.getLastTenders);
 
 router.route('/').get(tenderController.getAll).post(tenderController.createOne);
 

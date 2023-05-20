@@ -120,6 +120,21 @@ exports.getCounter = async (req, res, next) => {
   });
 };
 
+exports.getLastTenders = catchAsync(async (req, res, next) => {
+  // Calculate the date 24 hours ago
+  const twentyFourHoursAgo = new Date();
+  twentyFourHoursAgo.setDate(twentyFourHoursAgo.getDate() - 1);
+
+  // Find all documents with createdAt greater than or equal to twentyFourHoursAgo
+  const counter = await Tender.countDocuments({
+    createdAt: { $gte: twentyFourHoursAgo },
+  });
+  return res.status(200).json({
+    success: true,
+    counter: counter,
+  });
+});
+
 exports.getActive = catchAsync(async (req, res, next) => {
   const query = Tender.find({
     submissionDeadlineDate: { $gte: new Date().toDateString(), $ne: null }, // it will get you records for today's date only
