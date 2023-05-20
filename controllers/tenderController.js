@@ -85,7 +85,7 @@ exports.getAll = async (req, res, next) => {
   const tenderCursor = Tender.find(query);
   const total = await tenderCursor.clone().countDocuments();
   const tenders = await tenderCursor
-    .sort('-expedientUpdatedAt')
+    .sort('-updatedAt')
     .skip(skip)
     .limit(limit)
     .populate('cpvCodes')
