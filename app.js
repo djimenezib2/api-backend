@@ -16,6 +16,7 @@ const organizationRouter = require('./routes/organizationRoutes');
 const runnableRouter = require('./routes/runnableRoutes');
 const tenderRouter = require('./routes/tenderRoutes');
 const errorRouter = require('./routes/errorRoutes');
+const userRouter = require('./routes/userRoutes');
 
 const router = express();
 
@@ -58,5 +59,6 @@ router.use('/v1/organizations', organizationRouter);
 router.use('/v1/runnables', runnableRouter);
 router.use('/v1/tenders', tenderRouter);
 router.use('/v1/errors', errorRouter);
+router.use('/v1/users', userRouter);
 
 module.exports = router;
