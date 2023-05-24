@@ -21,8 +21,12 @@ const userRouter = require('./routes/userRoutes');
 const router = express();
 
 // CORS related
-router.use(cors());
-router.options('*', cors());
+const corsOptions = {
+  origin: 'http://localhost:8080',
+  credentials: true, // Allow credentials (cookies)
+};
+
+router.use(cors(corsOptions));
 
 // Set security HTTP headers
 router.use(helmet());

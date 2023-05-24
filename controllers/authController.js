@@ -10,25 +10,63 @@ const signToken = (id) => {
 };
 
 const createSendToken = (user, statusCode, res) => {
-  const token = signToken(user._id);
-  const cookieOptions = {
-    expires: new Date(
-      Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
-    ),
-    httpOnly: true,
-  };
+  // const token = signToken(user._id);
+  // const cookieOptions = {
+  //   expires: new Date(
+  //     Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
+  //   ),
+  //   // httpOnly: true,
+  // };
 
-  res.cookie('jwt', token, cookieOptions);
+  // res.cookie('jwt', token, cookieOptions);
 
-  // Remove password from output
+  // // Remove password from output
+  // user.password = undefined;
+
+  // res.status(statusCode).json({
+  //   status: 'success',
+  //   token,
+  //   data: {
+  //     user,
+  //   },
+  // });
+  const token = jwt.sign(
+    { id: user._id, role: user.role },
+    process.env.JWT_SECRET
+  );
+
   user.password = undefined;
 
-  res.status(statusCode).json({
+  res.cookie('jwt', token).status(statusCode).json({
     status: 'success',
     token,
     data: {
       user,
     },
+  });
+};
+
+const verifyToken = (req, res, next) => {
+  const { token } = req.body;
+
+  if (!token) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+
+  jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+    if (err) {
+      return res.status(401).json({ error: 'Invalid token' });
+    }
+
+    // The token is valid, and the user information is available in the decoded object
+    req.user = decoded;
+    next();
+  });
+};
+
+exports.checkAuth = (req, res, next) => {
+  verifyToken(req, res, () => {
+    res.status(200).json({ role: req.user.role });
   });
 };
 
