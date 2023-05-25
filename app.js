@@ -17,6 +17,9 @@ const runnableRouter = require('./routes/runnableRoutes');
 const tenderRouter = require('./routes/tenderRoutes');
 const errorRouter = require('./routes/errorRoutes');
 const userRouter = require('./routes/userRoutes');
+const AppError = require('./utils/appError');
+const GlobalErrorHandler = require('./controllers/globalErrorHandler');
+const globalErrorHandler = require('./controllers/globalErrorHandler');
 
 const router = express();
 
@@ -64,5 +67,7 @@ router.use('/v1/runnables', runnableRouter);
 router.use('/v1/tenders', tenderRouter);
 router.use('/v1/errors', errorRouter);
 router.use('/v1/users', userRouter);
+
+router.use(globalErrorHandler);
 
 module.exports = router;
