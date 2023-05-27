@@ -11,9 +11,6 @@ const Tender = require('./../../../models/tenderModel');
 const Organization = require('./../../../models/organizationModel');
 const Cpv = require('./../../../models/cpvModel');
 
-// Controllers
-const tenderController = require('./../../../controllers/tenderController');
-
 exports.create = () =>
   catchAsync(async (req, res, next) => {
     //Check API KEY
@@ -33,19 +30,8 @@ exports.create = () =>
     }
 
     const options = {
-      // isCaseSensitive: false,
       includeScore: true,
       shouldSort: true,
-      // includeMatches: false,
-      // findAllMatches: false,
-      // minMatchCharLength: 1,
-      // location: 0,
-      // threshold: 0.6,
-      // distance: 100,
-      // useExtendedSearch: false,
-      // ignoreLocation: false,
-      // ignoreFieldNorm: false,
-      // fieldNormWeight: 1,
       keys: ['name'],
     };
 
@@ -100,16 +86,11 @@ const updateFromBody = async function (tender, body) {
   ) {
     var objForUpdate = {};
 
-    // updatetAt not updating right now.
-
     if (body.name) objForUpdate.name = body.name;
     if (body.contractType)
       objForUpdate.contractType = getContractType(body.contractType);
-    // if (body.status) objForUpdate.status = body.status;
-    // if (body.procedure) objForUpdate.procedure = getProcedure(body.procedure);
     if (body.cpvCodes)
       objForUpdate.cpvCodes = await getCpvCodesFromString(body.cpvCodes);
-    // if (body.submissionDeadlineDate) objForUpdate.submissionDeadlineDate = repairDate(body.submissionDeadlineDate);
     if (body.expedientUpdatedAt)
       objForUpdate.expedientUpdatedAt = repairDate(body.expedientUpdatedAt);
     if (body.budgetNoTaxes)
@@ -118,13 +99,6 @@ const updateFromBody = async function (tender, body) {
       objForUpdate.contractEstimatedValue = numbersFromPriceString(
         body.contractEstimatedValue
       );
-    // if (body.result) objForUpdate.result = body.result;
-    // if (body.biddersNumber) objForUpdate.biddersNumber = numbersFromIntegerString(body.biddersNumber);
-    // if (body.awardAmount) objForUpdate.awardAmount = numbersFromPriceString(body.awardAmount);
-    // if (body.isAdjudication) objForUpdate.isAdjudication = body.isAdjudication;
-    // if (body.successBidderOrganization && !tender.successBidderOrganization)objForUpdate.successBidderOrganization = await Organization.findOrCreate(body.successBidderOrganization, 'bidder');
-    // if (body.sheets) objForUpdate.sheets = body.sheets;
-    // if (body.documents) objForUpdate.documents = await getDocuments(body);
 
     objForUpdate.isAdjudication = body.status === 'Adjudicada';
 
@@ -135,7 +109,6 @@ const updateFromBody = async function (tender, body) {
       runValidators: true,
     });
   }
-  // ...
 
   return tender;
 };
@@ -167,7 +140,6 @@ const createFromBody = async function (body) {
     name: body.name,
     contractType: contractType,
     cpvCodes: cpvCodes,
-    //TODO CHANGE TO LOCATION COMMING FROM SCRAPPERS
     locationText: body.locationText,
     locations: new Map(Object.entries(body.locations)),
     expedientCreatedAt: expedientCreatedAt,

@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const { v4: uuidv4 } = require('uuid');
 
 const runnableSchema = new mongoose.Schema(
   {
@@ -10,7 +9,14 @@ const runnableSchema = new mongoose.Schema(
     items: Number,
     type: {
       type: String,
-      enum: ['all', 'scanAtomFolder', 'long', 'short', 'single', 'organizations'],
+      enum: [
+        'all',
+        'scanAtomFolder',
+        'long',
+        'short',
+        'single',
+        'organizations',
+      ],
     },
     createdAt: {
       type: Date,
@@ -25,7 +31,7 @@ const runnableSchema = new mongoose.Schema(
   {
     toJSON: { virtuals: true },
     toObject: { virtuals: true },
-  },
+  }
 );
 
 runnableSchema.pre(/^find/, function (next) {

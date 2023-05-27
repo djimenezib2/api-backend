@@ -10,12 +10,8 @@ const Fuse = require('fuse.js');
 const Country = require('./../../../models/countryModel');
 const Cpv = require('./../../../models/cpvModel');
 const Currency = require('./../../../models/currencyModel');
-const Language = require('./../../../models/languageModel');
 const Organization = require('./../../../models/organizationModel');
 const Tender = require('./../../../models/tenderModel');
-
-// Controllers
-const tenderController = require('./../../../controllers/tenderController');
 
 exports.create = () =>
   catchAsync(async (req, res, next) => {
@@ -41,19 +37,8 @@ exports.create = () =>
       .exec();
 
     const options = {
-      // isCaseSensitive: false,
       includeScore: true,
       shouldSort: true,
-      // includeMatches: false,
-      // findAllMatches: false,
-      // minMatchCharLength: 1,
-      // location: 0,
-      // threshold: 0.6,
-      // distance: 100,
-      // useExtendedSearch: false,
-      // ignoreLocation: false,
-      // ignoreFieldNorm: false,
-      // fieldNormWeight: 1,
       keys: ['name'],
     };
 
@@ -110,8 +95,6 @@ const updateFromBody = async function (tender, body) {
   ) {
     var objForUpdate = {};
 
-    // updatetAt not updating right now.
-
     if (body.name) objForUpdate.name = body.name;
     if (body.contractType)
       objForUpdate.contractType = getContractType(body.contractType);
@@ -165,15 +148,12 @@ const createFromBody = async function (body) {
     body.contractingOrganization,
     'public-contracting-institution'
   );
-  // const successBidderOrganization = await Organization.findOrCreate(body.successBidderOrganization, "bidder");
 
   // Number
   const budgetNoTaxes = numbersFromPriceString(body.budgetNoTaxes);
   const contractEstimatedValue = numbersFromPriceString(
     body.contractEstimatedValue
   );
-  // const awardAmount = numbersFromPriceString(body.awardAmount);
-  // const biddersNumber = numbersFromIntegerString(body.biddersNumber);
 
   // Dates
   const submissionDeadlineDate = repairDate(body.submissionDeadlineDate);
@@ -205,10 +185,6 @@ const createFromBody = async function (body) {
     contractingOrganization: contractingOrganization,
     budgetNoTaxes: budgetNoTaxes,
     contractEstimatedValue: contractEstimatedValue,
-    // result: body.result,
-    // successBidderOrganization: successBidderOrganization,
-    // biddersNumber: biddersNumber,
-    // awardAmount: awardAmount,
     documents: documents,
     sheets: body.sheets,
     country: await Country.getCountryByName('ES'),

@@ -5,8 +5,6 @@ const router = express.Router();
 
 router.route('/').get(cpvController.getAll).post(cpvController.create);
 
-// router.route('/search').get(cpvController.search);
-
 router
   .route('/:id')
   .get(cpvController.get)

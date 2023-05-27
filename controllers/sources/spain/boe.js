@@ -9,13 +9,9 @@ const Fuse = require('fuse.js');
 // Models
 const Country = require('./../../../models/countryModel');
 const Currency = require('./../../../models/currencyModel');
-const Language = require('./../../../models/languageModel');
 const Tender = require('./../../../models/tenderModel');
 const Organization = require('./../../../models/organizationModel');
 const Cpv = require('./../../../models/cpvModel');
-
-// Controllers
-const tenderController = require('./../../../controllers/tenderController');
 
 exports.create = () =>
   catchAsync(async (req, res, next) => {
@@ -40,19 +36,8 @@ exports.create = () =>
       .exec();
 
     const options = {
-      // isCaseSensitive: false,
       includeScore: true,
       shouldSort: true,
-      // includeMatches: false,
-      // findAllMatches: false,
-      // minMatchCharLength: 1,
-      // location: 0,
-      // threshold: 0.6,
-      // distance: 100,
-      // useExtendedSearch: false,
-      // ignoreLocation: false,
-      // ignoreFieldNorm: false,
-      // fieldNormWeight: 1,
       keys: ['name'],
     };
 
@@ -107,8 +92,6 @@ const updateFromBody = async function (tender, body) {
     )
   ) {
     var objForUpdate = {};
-
-    // updatetAt not updating right now.
 
     if (body.name) objForUpdate.name = body.name;
     if (body.contractType)

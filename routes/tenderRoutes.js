@@ -45,7 +45,6 @@ router.route('/active').get(tenderController.getActive);
 
 // Adjudicaciones
 router.route('/adjudications').get(tenderController.getAdjudications);
-//router.route("/cpvFilter").get(tenderController.getTendersByCpvs);
 
 // Contratos menores
 router.route('/minorContracts').get(tenderController.getMinorContracts);
@@ -59,12 +58,5 @@ router
   .get(tenderController.getOne)
   .patch(tenderController.updateOne)
   .delete(tenderController.deleteOne);
-
-// router.route("/").get(tenderController.getAllTenders);
-// .post(tenderController.createTender);
-
-// router.route("/:key").get(tenderController.getTender);
-// .patch(tenderController.updateTender)
-// .delete(tenderController.deleteTender);
 
 module.exports = router;

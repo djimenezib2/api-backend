@@ -8,7 +8,7 @@ const cpvSchema = new mongoose.Schema(
       type: String,
       required: [true, 'A CPV must have a name'],
       trim: true,
-      intl: true, // multilingual field -> https://www.npmjs.com/package/mongoose-intl o https://github.com/alexsk/mongoose-intl
+      intl: true,
     },
     parent: {
       type: mongoose.Schema.ObjectId,
@@ -16,16 +16,15 @@ const cpvSchema = new mongoose.Schema(
     },
     type: {
       type: String,
-      enum: ['division', 'group', 'class', 'category'], // https://simap.ted.europa.eu/cpv o https://simap.ted.europa.eu/es/cpv
+      enum: ['division', 'group', 'class', 'category'],
     },
   },
   {
     toJSON: { virtuals: true },
     toObject: { virtuals: true },
-  },
+  }
 );
 
-// Ficar tots els idiomes del Excel (TO DO)
 cpvSchema.plugin(mongooseIntl, {
   languages: ['en', 'de', 'fr', 'es', 'it'],
   defaultLanguage: 'es',

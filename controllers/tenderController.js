@@ -192,8 +192,6 @@ exports.getFilteredTenders = catchAsync(async (req, res, next) => {
       totalItems: total,
       data: result,
     });
-
-    //factory.getAll(Tender, query)(req, res, next);
   }
 });
 

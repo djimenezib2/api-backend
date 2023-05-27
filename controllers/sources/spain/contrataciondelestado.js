@@ -10,12 +10,8 @@ const Fuse = require('fuse.js');
 const Country = require('./../../../models/countryModel');
 const Cpv = require('./../../../models/cpvModel');
 const Currency = require('./../../../models/currencyModel');
-const Language = require('./../../../models/languageModel');
 const Organization = require('./../../../models/organizationModel');
 const Tender = require('./../../../models/tenderModel');
-
-// Controllers
-const tenderController = require('./../../../controllers/tenderController');
 
 exports.create = () =>
   catchAsync(async (req, res, next) => {
@@ -34,24 +30,13 @@ exports.create = () =>
     // Check if Tender already exists
     let docs = await Tender.find({
       expedient: req.body.expedient,
-    }) // !name, !url
+    })
       .populate('sources')
       .exec();
 
     const options = {
-      // isCaseSensitive: false,
       includeScore: true,
       shouldSort: true,
-      // includeMatches: false,
-      // findAllMatches: false,
-      // minMatchCharLength: 1,
-      // location: 0,
-      // threshold: 0.6,
-      // distance: 100,
-      // useExtendedSearch: false,
-      // ignoreLocation: false,
-      // ignoreFieldNorm: false,
-      // fieldNormWeight: 1,
       keys: ['name'],
     };
 
@@ -109,8 +94,6 @@ const updateFromBody = async function (tender, body) {
     )
   ) {
     var objForUpdate = {};
-
-    // updatetAt not updating right now.
 
     if (body.name) objForUpdate.name = body.name;
     if (body.contractType)

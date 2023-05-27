@@ -1,5 +1,4 @@
 // Models
-const Source = require('./../../models/sourceModel');
 const Tender = require('./../../models/tenderModel');
 
 exports.updateSource = async function (tender, sourceName, body) {

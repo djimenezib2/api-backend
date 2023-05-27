@@ -1,7 +1,6 @@
 const Runnable = require('./../models/runnableModel');
 const AppError = require('./../utils/appError');
 const factory = require('./handlerFactory');
-const catchAsync = require('./../utils/catchAsync');
 
 exports.createRunnable = async (req, res, next) => {
   // Check API KEY

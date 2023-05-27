@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
 const slugify = require('slugify');
-const { v4: uuidv4 } = require('uuid');
 
 const organizationSchema = new mongoose.Schema(
   {
@@ -66,7 +65,7 @@ const organizationSchema = new mongoose.Schema(
   {
     toJSON: { virtuals: true },
     toObject: { virtuals: true },
-  },
+  }
 );
 
 organizationSchema.pre(/^find/, function (next) {
@@ -74,12 +73,9 @@ organizationSchema.pre(/^find/, function (next) {
   next();
 });
 
-// METHODS
-
 // STATICS
 
 organizationSchema.statics.findOrCreate = async function (name, playerType) {
-
   if (!name || name === '' || name === 'Ver detalle de la adjudicación') {
     return null;
   }
@@ -92,7 +88,7 @@ organizationSchema.statics.findOrCreate = async function (name, playerType) {
 
   // Find
   let organization = await Organization.findOne({
-    slug
+    slug,
   });
 
   if (organization) {

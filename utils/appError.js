@@ -1,7 +1,7 @@
 const errorModel = require('./../models/errorModel');
 class AppError extends Error {
   constructor(message, statusCode, requestBody = '', source = '') {
-    super(message); // when we use "extends" to call the parent class
+    super(message);
 
     this.statusCode = statusCode;
     this.status = `${statusCode}`.startsWith('4') ? 'fail' : 'error';

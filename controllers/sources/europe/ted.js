@@ -7,15 +7,10 @@ const moment = require('moment');
 const Fuse = require('fuse.js');
 
 // Models
-const Country = require('./../../../models/countryModel');
 const Cpv = require('./../../../models/cpvModel');
 const Currency = require('./../../../models/currencyModel');
-const Language = require('./../../../models/languageModel');
 const Organization = require('./../../../models/organizationModel');
 const Tender = require('./../../../models/tenderModel');
-
-// Controllers
-const tenderController = require('./../../../controllers/tenderController');
 
 exports.create = () =>
   catchAsync(async (req, res, next) => {
@@ -37,19 +32,8 @@ exports.create = () =>
     }
 
     const options = {
-      // isCaseSensitive: false,
       includeScore: true,
       shouldSort: true,
-      // includeMatches: false,
-      // findAllMatches: false,
-      // minMatchCharLength: 1,
-      // location: 0,
-      // threshold: 0.6,
-      // distance: 100,
-      // useExtendedSearch: false,
-      // ignoreLocation: false,
-      // ignoreFieldNorm: false,
-      // fieldNormWeight: 1,
       keys: ['name'],
     };
 
@@ -150,7 +134,6 @@ const updateFromBody = async function (tender, body) {
       runValidators: true,
     });
   }
-  // ...
 
   return tender;
 };
@@ -168,12 +151,10 @@ const createFromBody = async function (body) {
 
   // Number
   const budgetNoTaxes = numbersFromPriceString(body.budgetNoTaxes);
-  // const contractEstimatedValue = numbersFromPriceString(body.contractEstimatedValue);
   const awardAmount = numbersFromPriceString(body.awardAmount);
   const biddersNumber = numbersFromIntegerString(body.biddersNumber);
 
   // Dates
-  // const submissionDeadlineDate = repairDate(body.submissionDeadlineDate);
   const expedientUpdatedAt = repairDate(body.expedientUpdatedAt);
   const expedientCreatedAt = repairDate(body.expedientCreatedAt);
 
@@ -182,9 +163,6 @@ const createFromBody = async function (body) {
   const contractType = getContractType(body.contractType);
   const procedure = getProcedure(body.procedure);
   const sources = commons.getSource('Tenders Electronic Daily', body);
-
-  // Repair body documents
-  // const documents = getDocuments(body);
 
   tender = await Tender.create({
     expedient: body.expedient,
@@ -195,22 +173,15 @@ const createFromBody = async function (body) {
     sources: sources,
     locationText: body.locationText,
     locations: new Map(Object.entries(body.locations)),
-    // submissionDeadlineDate: submissionDeadlineDate,
     expedientCreatedAt: expedientCreatedAt,
     expedientUpdatedAt: expedientUpdatedAt,
     procedure: procedure,
     contractingOrganization: contractingOrganization,
     budgetNoTaxes: budgetNoTaxes,
-    // contractEstimatedValue: contractEstimatedValue,
-    // result: body.result,
     successBidderOrganization: successBidderOrganization,
     biddersNumber: biddersNumber,
     awardAmount: awardAmount,
-    // documents: documents,
-    // sheets: body.sheets,
-    // country: await Country.getCountryByName("ES"),
     currency: await Currency.getCurrencyByName(body.currency),
-    // isAdjudication: body.status === "Adjudicada"
   });
 
   await tender.populate('sources');

@@ -10,10 +10,8 @@ const sourceSchema = new mongoose.Schema(
   {
     toJSON: { virtuals: true },
     toObject: { virtuals: true },
-  },
+  }
 );
-
-// METHODS
 
 // STATICS
 

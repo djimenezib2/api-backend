@@ -1,13 +1,10 @@
-const bodyParser = require('body-parser');
 const compression = require('compression');
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
 const express = require('express');
 const helmet = require('helmet');
-const http = require('http');
 const mongoSanitize = require('express-mongo-sanitize');
 const morgan = require('morgan');
-const rateLimit = require('express-rate-limit');
 const xss = require('xss-clean');
 
 // Routers
@@ -17,8 +14,6 @@ const runnableRouter = require('./routes/runnableRoutes');
 const tenderRouter = require('./routes/tenderRoutes');
 const errorRouter = require('./routes/errorRoutes');
 const userRouter = require('./routes/userRoutes');
-const AppError = require('./utils/appError');
-const GlobalErrorHandler = require('./controllers/globalErrorHandler');
 const globalErrorHandler = require('./controllers/globalErrorHandler');
 
 const router = express();
@@ -36,16 +31,8 @@ router.use(helmet());
 
 if (process.env.NODE_ENV === 'development') {
   // Development
-  router.use(morgan('dev')); // Development logging
+  router.use(morgan('dev'));
 }
-
-// Limit requests from same API
-// const limiter = rateLimit({
-//     max: 100,
-//     windowMs: 60 * 60 * 1000,
-//     message: 'Too many requests from this IP, please try again in an hour!'
-// });
-// app.use('/api', limiter);
 
 // Body parser, reading data from body into req.body
 router.use(express.json());
