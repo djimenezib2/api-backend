@@ -31,7 +31,7 @@ const createSendToken = (user, statusCode, res) => {
   //   },
   // });
   const token = jwt.sign(
-    { id: user._id, role: user.role },
+    { id: user._id, role: user.role, name: user.name },
     process.env.JWT_SECRET
   );
 
@@ -66,7 +66,7 @@ const verifyToken = (req, res, next) => {
 
 exports.checkAuth = (req, res, next) => {
   verifyToken(req, res, () => {
-    res.status(200).json({ role: req.user.role });
+    res.status(200).json({ role: req.user.role, name: req.user.name });
   });
 };
 
